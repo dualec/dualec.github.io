@@ -179,7 +179,10 @@ Microsoft SChannel, and OpenSSL (with the bug repaired) also proved
 feasible to attack, but were in some cases significantly more costly. Indeed, depending on the design choices in the
 implementations, an attacker can recover TLS session keys within
 seconds on a single CPU or may require a cluster of more than 100,000
-CPUs for the same task if a different library is used.</p>
+CPUs for the same task if a different library is used. Note that our
+speed results are due to our custom, highly-optimized attack
+implementations. Less efficient implementations may take significantly
+more time.</p>
 
 <h1>Measurement Study</h1>
 
