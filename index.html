@@ -80,7 +80,7 @@ function gestureStart() {
 may have been influenced by the NSA in order to weaken the security of U.S. and
 non-US cryptography products. These standards include <a href="http://csrc.nist.gov/publications/nistpubs/800-90A/SP800-90A.pdf">NIST
 Special Publication 800-90A</a> and <a href="http://www.iso.org/iso/catalogue_detail.htm?csnumber=54945">ISO 18031</a>, both of which contain algorithms
-for generating the random numbers used, for example, to generate keys for cryptographic systems.</P>
+for generating the random numbers used, for example, to generate keys for cryptographic systems.</p>
 
 <p>One of the algorithms
 contained within these documents is a <a href="http://en.wikipedia.org/wiki/Pseudorandom_number_generator">pseudorandom
@@ -113,7 +113,7 @@ to attacks on Dual EC DRBG.</p>
 <p>Surprisingly, we determined that the previously known attacks do not tell the entire
 story. They do not consider many important implementation-specific decisions, in particular
 the amount of generator output revealed, the alignment of outputs, the use of additional entropy, and even critical
-bugs in Dual EC implementations.</P>
+bugs in Dual EC implementations.</p>
 
 <h1>Summary of our results</h1>
 <p>We analyzed the use of Dual EC in four recent
@@ -142,16 +142,23 @@ follows:</p>
     significantly more expensive than for the other libraries.</li>
 </ul>
 
-<p>We also discovered evidence of the implementation in the RSA BSAFE products of a non-standard TLS extension called <a href="http://tools.ietf.org/html/draft-rescorla-tls-extended-random-00">&ldquo;Extended Random.&rdquo;</a> This
-extension, co-written at the request of the National Security Agency, allows a client to request longer TLS random nonces from the
-server, a feature that, if it enabled, would speed up the
-Dual EC attack by a factor of up to 65,000. In addition, the use of this extension allows for
-for attacks on Dual EC instances configured with P-384 and P-521 elliptic curves,
-something that is not apparently possible in standard TLS. While the code implementing Extended
-Random was not compiled into our build of Share for C/C++, it was available (though deactivated) in the build of Share for Java that we analyzed. In the latter case, we
-were able to re-enable it and verify the functionality.
+<p>We also discovered evidence of the implementation in the RSA BSAFE
+products of a non-standard TLS extension called
+<a href="http://tools.ietf.org/html/draft-rescorla-tls-extended-random-00">&ldquo;Extended
+Random.&rdquo;</a> This extension, co-written at the request of the
+National Security Agency, allows a client to request longer TLS random
+nonces from the server, a feature that, if it enabled, would speed up
+the Dual EC attack by a factor of up to 65,000. In addition, the use
+of this extension allows for for attacks on Dual EC instances
+configured with P-384 and P-521 elliptic curves, something that is not
+apparently possible in standard TLS. While the code implementing
+Extended Random was not compiled into our build of Share for C/C++, it
+was available (though deactivated) in the build of Share for Java that
+we analyzed. In the latter case, we were able to re-enable it and
+verify the functionality. Note that the attack times reported below do
+not take advantage of extended random.</p>
 
-<p>Our results are summarized in the following table.</P>
+<p>Our results are summarized in the following table.</p>
 
 <table class="small">
 <tr><th style="width:25%">Library</th><th>Default PRNG</th><th>Extended Random</th><th>Bytes per Session</th><th>Additional Entropy</th><th>Time (minutes)</th></tr>
