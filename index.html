@@ -47,7 +47,7 @@ function gestureStart() {
 
         <p><a href="DualECTLS.pdf">Link to the research paper (PDF)</a></p>
 
-        <p>Project Members:</p>
+        <p>Paper authors:</p>
         <p><a href="https://www.cs.jhu.edu/~s/">Stephen Checkoway</a>, Johns Hopkins<br>
 <a href="http://pages.cs.wisc.edu/~mfredrik/">Matt Fredrikson</a>, U Wisconsin<br>
 <a href="http://polycephaly.org/">Ruben Niederhagen</a>, TU Eindhoven<br>
@@ -92,76 +92,84 @@ Curve Deterministic Random Bit Generator</a> (Dual EC DRBG) that has
 long been known
 to <a href="http://rump2007.cr.yp.to/15-shumow.pdf">admit a serious potential
 back door</a> in the event that an attacker generates the standard
-algorithm parameters. While we do not claim that NIST or NSA designed
-the generator to facilitate such attacks, the September 2013 news appears to provide evidence for this possibility.</p>
+algorithm parameters. While no one is claiming that NIST or NSA
+designed the generator to facilitate such attacks, the September 2013
+news appears to provide evidence for this possibility.</p>
 
 <h1> Use of Dual EC in TLS Libraries</h1>
 <p>Despite <a href="http://rump2007.cr.yp.to/15-shumow.pdf">Shumow and Ferguson's warning</a> in 2007, several cryptographic software vendors have
 implemented Dual EC in their products. For example, both Microsoft&rsquo;s SChannel (used in Microsoft Internet Explorer
 and <a href="http://en.wikipedia.org/wiki/Internet_Information_Services">IIS</a>) and OpenSSL&rsquo;s FIPS module include Dual EC as an optional random number generator. Moreover, RSA&rsquo;s BSAFE crypto libraries use Dual EC as the default random number generator.</p>
 
-<p>A primary use-case for each of the aforementioned software libraries is  to establish encrypted <a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">SSL/TLS</a> connections, which are used for secure web browsing, email transfer, VPNs and many other applications. Our paper studies to what extent TLS/SSL connections established by these software libraries are
-vulnerable to attacks using the Dual EC back door, assuming that an attacker knows a
-trapdoor for the Dual EC parameters.</p>
+<p>A primary use-case for each of the aforementioned software
+libraries is to establish encrypted
+<a href="http://en.wikipedia.org/wiki/Transport_Layer_Security">SSL/TLS</a>
+connections, which are used for secure web browsing, email transfer,
+VPNs and many other applications. The authors study to what extent
+TLS/SSL connections established by these software libraries are
+vulnerable to attacks using the Dual EC back door, assuming that an
+attacker knows a trapdoor for the Dual EC parameters.</p>
 
-<p>To conduct this research, we reverse-engineered several
+<p>To conduct this research, the authors reverse-engineered several
 libraries, including <a href="https://developer-content.emc.com/docs/rsashare/share_for_c/1.1/api_guide/group___m_e_s___p_r_e_f_a_c_e.html">RSA BSAFE Share for C/C++</a>, <a href="https://community.emc.com/docs/DOC-3286">RSA BSAFE Share for Java</a>, <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ms678421(v=vs.85).aspx">Microsoft SChannel</a>, and
 <a href="http://openssl.org">OpenSSL</a>, in order to replace the existing Dual EC parameters with
-those of our own devising.  In the case of Share for C/C++, Share for Java and
+those of their own devising.  In the case of Share for C/C++, Share for Java and
 SChannel, identifying the Dual EC parameters and disabling relevant diagnostics
-required substantial reverse engineering effort.  We then determined
+required substantial reverse engineering effort. They then determined
 to what extent TLS connections made by these libraries were vulnerable
 to attacks on Dual EC DRBG.</p>
 
-<p>Surprisingly, we determined that the previously known attacks do not tell the entire
+<p>Surprisingly, the previously known attacks do not tell the entire
 story. They do not consider many important implementation-specific decisions, in particular
 the amount of generator output revealed, the alignment of outputs, the use of additional entropy, and even critical
 bugs in Dual EC implementations.</p>
 
-<h1>Summary of our results</h1>
-<p>We analyzed the use of Dual EC in four recent
+<h1>Summary of the results</h1>
+<p>The researchers analyzed the use of Dual EC in four recent
 TLS/SSL library implementations: RSA BSAFE Share for C/C++, RSA BSAFE Share for
-Java, Microsoft SChannel, and OpenSSL.  Our major findings are as
+Java, Microsoft SChannel, and OpenSSL.  The major findings are as
 follows:</p>
 
 <ul>
 <li>The RSA BSAFE implementations of TLS make the Dual EC back door
-    particularly easy to exploit compared to the other libraries we analyzed. The C version of BSAFE makes a drastic speedup in the
+    particularly easy to exploit compared to the other libraries analyzed. The C version of BSAFE makes a drastic speedup in the
     attack possible by broadcasting long contiguous strings of random bytes and by caching the output from each generator call. The Java version of
     BSAFE includes fingerprints in connections, making it relatively easy to
     identify them in a stream of network traffic.   
     </li>
 <li>SChannel does not implement the current Dual EC standard: it omits
-    one step of the Dual EC algorithm. We show that this omission does
+    one step of the Dual EC algorithm. This omission does
     not prevent attacks; in fact, it makes them slightly faster.</li>
-<li>We discovered in OpenSSL a previously unknown bug that prevented
+<li>A previously unknown bug was discovered in OpenSSL that prevented
     the library from running when Dual EC is enabled. It is still
     conceivable that someone is using Dual EC in OpenSSL, since the
-    bug has an obvious and very easy fix, so we applied this fix and
-    evaluated the resulting version of OpenSSL, which we call
+    bug has an obvious and very easy fix which was applied in order to
+    evaluate the resulting version of OpenSSL, which the paper calls
     &ldquo;OpenSSL-fixed.&rdquo; OpenSSL-fixed turns out to provide
     additional entropy (&ldquo;additional input&rdquo;) with each call to the library. In practice, this
     additional input can make attacks
     significantly more expensive than for the other libraries.</li>
 </ul>
 
-<p>We also discovered evidence of the implementation in the RSA BSAFE
-products of a non-standard TLS extension called
+<p>Evidence of an implementation of a non-standard TLS extension
+called
 <a href="http://tools.ietf.org/html/draft-rescorla-tls-extended-random-00">&ldquo;Extended
-Random.&rdquo;</a> This extension, co-written at the request of the
+Random&rdquo;</a> was discovered in the RSA BSAFE products.
+This extension, co-written at the request of the
 National Security Agency, allows a client to request longer TLS random
 nonces from the server, a feature that, if it enabled, would speed up
 the Dual EC attack by a factor of up to 65,000. In addition, the use
 of this extension allows for for attacks on Dual EC instances
 configured with P-384 and P-521 elliptic curves, something that is not
 apparently possible in standard TLS. While the code implementing
-Extended Random was not compiled into our build of Share for C/C++, it
+Extended Random was not compiled into the build of Share for C/C++
+examined, it
 was available (though deactivated) in the build of Share for Java that
-we analyzed. In the latter case, we were able to re-enable it and
+was analyzed. In the latter case, the researchers were able to re-enable it and
 verify the functionality. Note that the attack times reported below do
 not take advantage of extended random.</p>
 
-<p>Our results are summarized in the following table.</p>
+<p>The results are summarized in the following table.</p>
 
 <table class="small">
 <tr><th style="width:25%">Library</th><th>Default PRNG</th><th>Extended Random</th><th>Bytes per Session</th><th>Additional Entropy</th><th>Time (minutes)</th></tr>
@@ -174,56 +182,62 @@ not take advantage of extended random.</p>
 </table>
 <br>
 
-<p>Each of the rows above describes a TLS library in a particular attack scenario. The rightmost column indicates the time required to achieve full
-decryption of a TLS connection on the small 16-CPU computer cluster we used in our
-experiments. The &ldquo;Default PRNG&rdquo; column indicates whether the Dual EC algorithm
-is specified as the default random number generator, or must be activated by the
-calling application. &ldquo;Extended Random&rdquo; indicates whether code for the Extended Random extension was present in the library we analyzed. The &ldquo;Additional Entropy&rdquo; column indicates
-how much &ldquo;additional input&rdquo; entropy is provided to the generator on each call to the generator. In the case of OpenSSL-Fixed II we assume an additional input of <i>k</i> bits.
-</p>
+<p>Each of the rows above describes a TLS library in a particular
+attack scenario. The rightmost column indicates the time required to
+achieve full decryption of a TLS connection on the small 16-CPU
+computer cluster used in the experiments. The &ldquo;Default
+PRNG&rdquo; column indicates whether the Dual EC algorithm
+is specified as the default random number generator, or must be
+activated by the calling application. &ldquo;Extended Random&rdquo;
+indicates whether code for the Extended Random extension was present
+in the library analyzed. The &ldquo;Additional Entropy&rdquo;
+column indicates how much &ldquo;additional input&rdquo; entropy is
+provided to the generator on each call to the generator. In the case
+of OpenSSL-Fixed III it is assumed that an additional input entropy of
+<i>k</i> bits is used. </p>
 
-<p>As illustrated above, we were able to decrypt TLS
-connections made by RSA Share for C/C++ in several seconds, and under
-a minute on an old laptop.  Other libraries, such as Share for Java,
+<p>As illustrated above, TLS connections made by RSA Share for C/C++
+could be decrypted in several seconds on the cluster and in under a
+minute on an old laptop. Other libraries, such as Share for Java,
 Microsoft SChannel, and OpenSSL (with the bug repaired) also proved
-feasible to attack, but were in some cases significantly more costly. Indeed, depending on the design choices in the
+feasible to attack, but were in some cases significantly more costly.
+Indeed, depending on the design choices in the
 implementations, an attacker can recover TLS session keys within
 seconds on a single CPU or may require a cluster of more than 100,000
-CPUs for the same task if a different library is used. Note that our
-speed results are due to our custom, highly-optimized attack
+CPUs for the same task if a different library is used. Note that the
+speed results are due to custom, highly-optimized attack
 implementations. Less efficient implementations may take significantly
 more time.</p>
 
 <h1>Measurement Study</h1>
 
-<p>Finally, we measured the prevalence of these libraries on the
-Internet. Initiating a <a href="https://zmap.io/">ZMap</a> scan over
-the entire IPv4 address space,
-we collected TLS handshake data from 21.8 million servers responding
-to public https requests. Using the known handshake fingerprint
-exhibited by BSAFE, as well as a pattern we discovered in the session
-identifiers produced by SChannel servers, we were able to identify the
-presence of these implementations from handshake data alone. We found
-that:</p>
+<p>Finally, the prevalence of these libraries on the Internet was
+studied. Initiating a <a href="https://zmap.io/">ZMap</a> scan over
+the entire IPv4 address space, TLS handshake data from 21.8 million
+servers responding to public https requests was collected. Using the
+known handshake fingerprint exhibited by BSAFE, as well as a pattern
+discovered in the session identifiers produced by SChannel servers,
+the researchers were able to identify the presence of these
+implementations from handshake data alone. They found that:</p>
 
 <ul>
 <li>The Java version of BSAFE is not prevalent on public-facing https
-    servers&mdash;we found only 720 servers (much less than 1%) that
+    servers&mdash;only 720 servers were found (much less than 1%) that
     exhibit the fingerprint. Closer examination revealed that one
     third of these correspond to one particular software package
     (Apache Coyote/1.1).</li>
 <li>SChannel is far more prevalent, comprising approximately 2.7
-    million servers (12%) of those we scanned.</li>
+    million servers (12%) of those scanned.</li>
 </ul>
 
 <p>There are two important points to make regarding these
-results. First, the number of BSAFE servers we found is a lower bound
+results. First, the number of BSAFE servers found is a lower bound
 for the true number of running BSAFE implementations&mdash;because the
-C++ version does not exhibit a handshake fingerprint by default, we
-are not aware of a reliable way to identify it remotely. Second, the
-SChannel fingerprint does not indicate whether Dual EC is in use on
-the server. It is not enabled by default on Windows, so the servers we
-observed are not all vulnerable to Dual EC attacks.</p>
+C++ version does not exhibit a handshake fingerprint by default and
+there does not appear to be a reliable way to identify it remotely.
+Second, the SChannel fingerprint does not indicate whether Dual EC is
+in use on the server. It is not enabled by default on Windows, so the
+servers observed are not all vulnerable to Dual EC attacks.</p>
 
       </section>
     </div>
