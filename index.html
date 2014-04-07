@@ -188,8 +188,9 @@ not take advantage of extended random.</p>
 <tr><td>BSAFE Java</td><td class="center">&#10003;</td><td class="center">&#10003;</td><td class="right">28</td><td class="right">&mdash;</td><td class="right">63.96</td></tr>
 <tr><td>SChannel I</td><td></td><td></td><td class="right">28</td><td class="right">&mdash;</td><td class="right">62.97</td></tr>
 <tr><td>SChannel II</td><td></td><td></td><td class="right">30</td><td class="right">&mdash;</td><td class="right">182.64</td></tr>
-<tr><td>OpenSSL-fixed I</td><td></td><td></td><td class="right">32</td><td class="right">2<sup>20</sup></td><td class="right">0.02</td></tr>
-<tr><td>OpenSSL-fixed III</td><td></td><td></td><td class="right">32</td><td class="right">2<sup>35+<i>k</i></sup></td><td class="right">2<sup><i>k</i></sup>&sdot;83.32</td></tr>
+<tr><td>OpenSSL-fixed I</td><td></td><td></td><td class="right">32</td><td class="right">20</td><td class="right">0.02</td></tr>
+<tr><td>OpenSSL-fixed II</td><td></td><td></td><td class="right">32</td><td class="right">35</td><td class="right">83.32</td></tr>
+<tr><td>OpenSSL-fixed III</td><td></td><td></td><td class="right">32</td><td class="right">35+<i>k</i></td><td class="right">2<sup><i>k</i></sup>&sdot;83.32</td></tr>
 </table>
 <br>
 
@@ -204,8 +205,8 @@ indicates whether code for the Extended Random extension was present
 in the library analyzed. The &ldquo;Additional Entropy&rdquo;
 column indicates how much &ldquo;additional input&rdquo; entropy is
 provided to the generator on each call to the generator. In the case
-of OpenSSL-Fixed III it is assumed that an additional input entropy of
-<i>k</i> bits is used. </p>
+of OpenSSL-fixed III it is assumed that an additional input entropy of
+35+<i>k</i> bits is used. </p>
 
 <p>As illustrated above, TLS connections made by RSA Share for C/C++
 could be decrypted in several seconds on the cluster and in under a
